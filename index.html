@@ -111,7 +111,7 @@
   <header class="hero">
     <div class="eyebrow">ROITI · Technical Round · Today</div>
     <h1>DataFrame Drill</h1>
-    <p class="hero-sub">The only clue: Pandas needs to be installed for this round. Dense, scannable reference — no clicking to expand anything — built to be Ctrl+F'd on an unfamiliar machine mid-interview. Covers Pandas fundamentals, then the same problem shapes from the Pattern Stack translated into idiomatic Pandas instead of raw loops.</p>
+    <p class="hero-sub">The only clue: Pandas needs to be installed for this round. Dense, scannable reference — no clicking to expand anything — built to be Ctrl+F'd on an unfamiliar machine mid-interview. Every snippet is wrapped in <code class="inline">print()</code> so running it as a plain script actually shows output — bare expressions only auto-display in a REPL/Jupyter, not in <code class="inline">python file.py</code>.</p>
   </header>
 
   <nav class="toc">
@@ -134,19 +134,19 @@
     <div class="grid2">
       <div class="block">
         <h3>Create / load</h3>
-        <code class="snip">pd.DataFrame(list_of_dicts)
-pd.DataFrame({"a": [1,2], "b": [3,4]})
-pd.read_csv("file.csv")
-pd.read_json("file.json")</code>
+        <code class="snip">print(pd.DataFrame(list_of_dicts))
+print(pd.DataFrame({"a": [1, 2], "b": [3, 4]}))
+print(pd.read_csv("file.csv"))
+print(pd.read_json("file.json"))</code>
       </div>
       <div class="block">
         <h3>Inspect</h3>
-        <code class="snip">df.head()        # first 5 rows
-df.info()        # dtypes + non-null counts
-df.describe()    # numeric summary stats
-df.shape         # (rows, cols)
-df.columns       # column names
-df.dtypes        # per-column type</code>
+        <code class="snip">print(df.head())     # first 5 rows
+df.info()             # prints directly — no need to wrap
+print(df.describe())  # numeric summary stats
+print(df.shape)       # (rows, cols)
+print(df.columns)     # column names
+print(df.dtypes)      # per-column type</code>
       </div>
     </div>
   </section>
@@ -156,26 +156,26 @@ df.dtypes        # per-column type</code>
     <div class="grid2">
       <div class="block">
         <h3>Column selection</h3>
-        <code class="snip">df["col"]              # Series
-df[["a", "b"]]         # DataFrame, subset of cols</code>
+        <code class="snip">print(df["col"])          # Series
+print(df[["a", "b"]])     # DataFrame, subset of cols</code>
       </div>
       <div class="block">
         <h3>Row selection</h3>
-        <code class="snip">df.loc[0]              # by label/index
-df.iloc[0]             # by position
-df.loc[0:2, "a":"c"]   # label slice, INCLUSIVE end
-df.iloc[0:2, 0:2]      # position slice, exclusive end</code>
+        <code class="snip">print(df.loc[0])              # by label/index
+print(df.iloc[0])             # by position
+print(df.loc[0:2, "a":"c"])   # label slice, INCLUSIVE end
+print(df.iloc[0:2, 0:2])      # position slice, exclusive end</code>
       </div>
       <div class="block">
         <h3>Boolean filtering</h3>
-        <code class="snip">df[df["amount"] > 100]
-df[(df["status"] == "paid") & (df["amount"] > 100)]   # & / | not and/or, parens required
-df[df["region"].isin(["US", "EU"])]
-df[~df["region"].isin(["US"])]                          # negate with ~</code>
+        <code class="snip">print(df[df["amount"] > 100])
+print(df[(df["status"] == "paid") & (df["amount"] > 100)])  # & / | not and/or, parens required
+print(df[df["region"].isin(["US", "EU"])])
+print(df[~df["region"].isin(["US"])])                         # negate with ~</code>
       </div>
       <div class="block">
         <h3>Query alternative</h3>
-        <code class="snip">df.query("amount > 100 and status == 'paid'")</code>
+        <code class="snip">print(df.query("amount > 100 and status == 'paid'"))</code>
       </div>
     </div>
   </section>
@@ -186,26 +186,30 @@ df[~df["region"].isin(["US"])]                          # negate with ~</code>
       <div class="block">
         <h3>Direct assignment (preferred — vectorized)</h3>
         <code class="snip">df["notional"] = df["price"] * df["qty"]
-df["flag"] = df["amount"] > 100</code>
+df["flag"] = df["amount"] > 100
+print(df)</code>
       </div>
       <div class="block">
         <h3><code class="inline">.apply()</code> — row/element-wise, slower</h3>
         <code class="snip">df["category"] = df["amount"].apply(
     lambda x: "High" if x >= 2000 else "Low"
 )
-df["total"] = df.apply(lambda row: row["price"] * row["qty"], axis=1)  # axis=1 = row-wise</code>
+df["total"] = df.apply(lambda row: row["price"] * row["qty"], axis=1)  # axis=1 = row-wise
+print(df)</code>
       </div>
       <div class="block">
         <h3><code class="inline">.map()</code> — Series-to-Series lookup</h3>
         <code class="snip">tax_rates = {"US": 0.07, "EU": 0.20}
-df["rate"] = df["region"].map(tax_rates).fillna(0)</code>
+df["rate"] = df["region"].map(tax_rates).fillna(0)
+print(df)</code>
       </div>
       <div class="block">
         <h3><code class="inline">np.select</code> / <code class="inline">np.where</code> — vectorized if/elif</h3>
         <code class="snip">import numpy as np
 conditions = [df["revenue"] >= 2000, df["revenue"] >= 1000]
 choices = ["High", "Medium"]
-df["tier"] = np.select(conditions, choices, default="Low")</code>
+df["tier"] = np.select(conditions, choices, default="Low")
+print(df)</code>
       </div>
     </div>
   </section>
@@ -215,15 +219,15 @@ df["tier"] = np.select(conditions, choices, default="Low")</code>
     <div class="grid2">
       <div class="block">
         <h3>Detect</h3>
-        <code class="snip">df.isna().sum()        # nulls per column
-df["col"].isna()       # boolean mask</code>
+        <code class="snip">print(df.isna().sum())   # nulls per column
+print(df["col"].isna())  # boolean mask</code>
       </div>
       <div class="block">
         <h3>Handle</h3>
-        <code class="snip">df.fillna(0)
-df["col"].fillna(df["col"].mean())
-df.dropna()                    # drop rows with any NaN
-df.dropna(subset=["col"])      # only consider this column</code>
+        <code class="snip">print(df.fillna(0))
+print(df["col"].fillna(df["col"].mean()))
+print(df.dropna())                  # drop rows with any NaN
+print(df.dropna(subset=["col"]))    # only consider this column</code>
       </div>
     </div>
   </section>
@@ -233,25 +237,27 @@ df.dropna(subset=["col"])      # only consider this column</code>
     <div class="grid2">
       <div class="block">
         <h3>Single aggregation</h3>
-        <code class="snip">df.groupby("customer")["amount"].sum()
-df.groupby("customer")["amount"].agg(["sum", "mean", "count"])</code>
+        <code class="snip">print(df.groupby("customer")["amount"].sum())
+print(df.groupby("customer")["amount"].agg(["sum", "mean", "count"]))</code>
       </div>
       <div class="block">
         <h3>Named aggregation — multiple cols, clean output</h3>
-        <code class="snip">df.groupby("customer").agg(
+        <code class="snip">result = df.groupby("customer").agg(
     total=("amount", "sum"),
     orders=("amount", "count"),
     avg=("amount", "mean"),
-).reset_index()</code>
+).reset_index()
+print(result)</code>
       </div>
       <div class="block">
         <h3>Filter before grouping</h3>
-        <code class="snip">df[df["status"] == "paid"].groupby("customer")["amount"].sum()</code>
+        <code class="snip">print(df[df["status"] == "paid"].groupby("customer")["amount"].sum())</code>
       </div>
       <div class="block">
         <h3>Group then transform back to original shape</h3>
         <code class="snip"># adds a column: each row gets its group's total
-df["customer_total"] = df.groupby("customer")["amount"].transform("sum")</code>
+df["customer_total"] = df.groupby("customer")["amount"].transform("sum")
+print(df)</code>
       </div>
     </div>
     <div class="warn"><b>reset_index()</b> A groupby result has the group key as the <i>index</i>, not a column — call <code class="inline">.reset_index()</code> if you need it back as a normal column (e.g. before merging or sorting on it as a column).</div>
@@ -262,12 +268,13 @@ df["customer_total"] = df.groupby("customer")["amount"].transform("sum")</code>
     <div class="grid2">
       <div class="block">
         <h3>Sort / top N</h3>
-        <code class="snip">df.sort_values("amount", ascending=False)
-df.nlargest(5, "amount")       # top 5, more efficient than sort+head</code>
+        <code class="snip">print(df.sort_values("amount", ascending=False))
+print(df.nlargest(5, "amount"))   # top 5, more efficient than sort+head</code>
       </div>
       <div class="block">
         <h3>Rank</h3>
-        <code class="snip">df["rank"] = df["amount"].rank(ascending=False, method="min")</code>
+        <code class="snip">df["rank"] = df["amount"].rank(ascending=False, method="min")
+print(df)</code>
       </div>
     </div>
   </section>
@@ -277,14 +284,14 @@ df.nlargest(5, "amount")       # top 5, more efficient than sort+head</code>
     <div class="grid2">
       <div class="block">
         <h3>Merge (SQL join equivalent)</h3>
-        <code class="snip">pd.merge(orders, customers, on="customer_id", how="left")
-pd.merge(a, b, left_on="id", right_on="cust_id", how="inner")</code>
+        <code class="snip">print(pd.merge(orders, customers, on="customer_id", how="left"))
+print(pd.merge(a, b, left_on="id", right_on="cust_id", how="inner"))</code>
         <p><code class="inline">how</code>: <code class="inline">inner</code> / <code class="inline">left</code> / <code class="inline">right</code> / <code class="inline">outer</code> — same semantics as SQL.</p>
       </div>
       <div class="block">
         <h3>Concat (stack, not join)</h3>
-        <code class="snip">pd.concat([df1, df2])                 # stack rows
-pd.concat([df1, df2], axis=1)         # stack columns side by side</code>
+        <code class="snip">print(pd.concat([df1, df2]))               # stack rows
+print(pd.concat([df1, df2], axis=1))       # stack columns side by side</code>
       </div>
     </div>
   </section>
@@ -293,7 +300,7 @@ pd.concat([df1, df2], axis=1)         # stack columns side by side</code>
     <h2>Pivot</h2>
     <div class="block">
       <h3><code class="inline">pivot_table</code> — group + reshape in one step</h3>
-      <code class="snip">pd.pivot_table(df, values="amount", index="customer", columns="month", aggfunc="sum", fill_value=0)</code>
+      <code class="snip">print(pd.pivot_table(df, values="amount", index="customer", columns="month", aggfunc="sum", fill_value=0))</code>
     </div>
   </section>
 
@@ -303,22 +310,24 @@ pd.concat([df1, df2], axis=1)         # stack columns side by side</code>
       <div class="block">
         <h3>Parse &amp; access</h3>
         <code class="snip">df["date"] = pd.to_datetime(df["date"])
-df["date"].dt.year
-df["date"].dt.month
-df["date"].dt.day_name()</code>
+print(df["date"].dt.year)
+print(df["date"].dt.month)
+print(df["date"].dt.day_name())</code>
       </div>
       <div class="block">
         <h3>Set as index for time-series ops</h3>
-        <code class="snip">df = df.set_index("date")</code>
+        <code class="snip">df = df.set_index("date")
+print(df)</code>
       </div>
       <div class="block">
         <h3>Resample — the Pandas equivalent of TimescaleDB's <code class="inline">time_bucket()</code></h3>
-        <code class="snip">df.resample("1H")["price"].mean()    # hourly average
-df.resample("1D")["volume"].sum()    # daily total</code>
+        <code class="snip">print(df.resample("1H")["price"].mean())   # hourly average
+print(df.resample("1D")["volume"].sum())   # daily total</code>
       </div>
       <div class="block">
         <h3>Rolling window</h3>
-        <code class="snip">df["rolling_avg"] = df["price"].rolling(window=3).mean()</code>
+        <code class="snip">df["rolling_avg"] = df["price"].rolling(window=3).mean()
+print(df)</code>
       </div>
     </div>
   </section>
@@ -337,25 +346,28 @@ df.resample("1D")["volume"].sum()    # daily total</code>
     <div class="grid2">
       <div class="block">
         <h3>Accumulator → sum with a filter</h3>
-        <code class="snip">paid_total = df.loc[df["status"] == "paid", "amount"].sum()</code>
+        <code class="snip">paid_total = df.loc[df["status"] == "paid", "amount"].sum()
+print(paid_total)</code>
       </div>
       <div class="block">
         <h3>Set → unique / nunique</h3>
-        <code class="snip">df["customer"].nunique()
-electronics_customers = set(df.loc[df["category"] == "Electronics", "customer"])</code>
+        <code class="snip">print(df["customer"].nunique())
+electronics_customers = set(df.loc[df["category"] == "Electronics", "customer"])
+print(electronics_customers)</code>
       </div>
       <div class="block">
         <h3>Counter → value_counts</h3>
-        <code class="snip">df["product"].value_counts().idxmax()   # most common
-df["product"].value_counts().head(1)</code>
+        <code class="snip">print(df["product"].value_counts().idxmax())   # most common
+print(df["product"].value_counts().head(1))</code>
       </div>
       <div class="block">
         <h3>Group → Aggregate</h3>
-        <code class="snip">df.groupby("customer")["amount"].sum()</code>
+        <code class="snip">print(df.groupby("customer")["amount"].sum())</code>
       </div>
       <div class="block">
         <h3>Filter → Aggregate</h3>
-        <code class="snip">df.loc[(df["product"] == "Laptop") & (df["date"] >= "2025-10-01"), "amount"].sum()</code>
+        <code class="snip">total = df.loc[(df["product"] == "Laptop") & (df["date"] >= "2025-10-01"), "amount"].sum()
+print(total)</code>
       </div>
       <div class="block">
         <h3>Derived Metric</h3>
@@ -363,41 +375,47 @@ df["product"].value_counts().head(1)</code>
     df["revenue"] > 0,
     (df["revenue"] - df["cost"]) / df["revenue"] * 100,
     None,
-)</code>
+)
+print(df)</code>
       </div>
       <div class="block">
         <h3>Previous vs Current</h3>
         <code class="snip">df["growth_pct"] = df["value"].pct_change() * 100
-df["prev"] = df["value"].shift(1)</code>
+df["prev"] = df["value"].shift(1)
+print(df)</code>
       </div>
       <div class="block">
         <h3>Sliding Window</h3>
-        <code class="snip">df["rolling_avg"] = df["value"].rolling(window=3, min_periods=1).mean()</code>
+        <code class="snip">df["rolling_avg"] = df["value"].rolling(window=3, min_periods=1).mean()
+print(df)</code>
       </div>
       <div class="block">
         <h3>Sort → Top N</h3>
-        <code class="snip">df.groupby("customer")["amount"].sum().nlargest(5)</code>
+        <code class="snip">print(df.groupby("customer")["amount"].sum().nlargest(5))</code>
       </div>
       <div class="block">
         <h3>Sort → Rank</h3>
         <code class="snip">totals = df.groupby("customer")["amount"].sum()
-totals.rank(ascending=False, method="min")</code>
+print(totals.rank(ascending=False, method="min"))</code>
       </div>
       <div class="block">
         <h3>Metric → Rules → Category</h3>
         <code class="snip">bins = [-float("inf"), 1000, 2000, float("inf")]
 labels = ["Low", "Medium", "High"]
-df["category"] = pd.cut(df["revenue"], bins=bins, labels=labels)</code>
+df["category"] = pd.cut(df["revenue"], bins=bins, labels=labels)
+print(df)</code>
       </div>
       <div class="block">
         <h3>Match → Compare (reconciliation)</h3>
         <code class="snip">merged = pd.merge(system_a, system_b, on="key", suffixes=("_a", "_b"), how="outer")
-mismatches = merged[merged["value_a"] != merged["value_b"]]</code>
+mismatches = merged[merged["value_a"] != merged["value_b"]]
+print(mismatches)</code>
       </div>
       <div class="block">
         <h3>Multi-Source Merge</h3>
         <code class="snip">order_value = prices.merge(quantities, on="product")
-order_value["total"] = order_value["price"] * order_value["qty"]</code>
+order_value["total"] = order_value["price"] * order_value["qty"]
+print(order_value)</code>
       </div>
     </div>
   </section>
@@ -408,41 +426,49 @@ order_value["total"] = order_value["price"] * order_value["qty"]</code>
     <div class="grid2">
       <div class="block">
         <h3>Remove duplicate rows</h3>
-        <code class="snip">df.drop_duplicates()
-df.drop_duplicates(subset=["order_id"], keep="first")</code>
+        <code class="snip">print(df.drop_duplicates())
+print(df.drop_duplicates(subset=["order_id"], keep="first"))</code>
       </div>
       <div class="block">
         <h3>Top N per group (not just overall top N)</h3>
-        <code class="snip">df.sort_values("amount", ascending=False) \
-  .groupby("customer") \
-  .head(3)   # top 3 orders per customer</code>
+        <code class="snip">top_per_customer = (
+    df.sort_values("amount", ascending=False)
+    .groupby("customer")
+    .head(3)   # top 3 orders per customer
+)
+print(top_per_customer)</code>
       </div>
       <div class="block">
         <h3>Reconciliation — rows that differ between two sources</h3>
         <code class="snip">merged = a.merge(b, on="key", suffixes=("_a", "_b"), how="outer", indicator=True)
-diffs = merged[merged["_merge"] != "both"]           # missing on one side
-mismatches = merged[merged["value_a"] != merged["value_b"]]  # present both, differ</code>
+diffs = merged[merged["_merge"] != "both"]              # missing on one side
+print(diffs)
+mismatches = merged[merged["value_a"] != merged["value_b"]]  # present both, differ
+print(mismatches)</code>
       </div>
       <div class="block">
         <h3>Find gaps in a time series <span class="tag">relevant here</span></h3>
         <code class="snip">df = df.sort_values("time")
 expected = pd.date_range(df["time"].min(), df["time"].max(), freq="1min")
-missing = expected.difference(df["time"])</code>
+missing = expected.difference(df["time"])
+print(missing)</code>
       </div>
       <div class="block">
         <h3>Forward-fill missing values over time</h3>
         <code class="snip">df = df.set_index("time").asfreq("1min")
-df["price"] = df["price"].ffill()   # or .interpolate()</code>
+df["price"] = df["price"].ffill()   # or .interpolate()
+print(df)</code>
       </div>
       <div class="block">
         <h3>Long → wide reshape</h3>
         <code class="snip"># one row per (date, metric) -> one row per date, one column per metric
-df.pivot(index="date", columns="metric", values="value")</code>
+print(df.pivot(index="date", columns="metric", values="value"))</code>
       </div>
       <div class="block">
         <h3>Clean a messy text column</h3>
         <code class="snip">df["name"] = df["name"].str.strip().str.lower()
-df["name"] = df["name"].str.replace(r"\s+", " ", regex=True)</code>
+df["name"] = df["name"].str.replace(r"\s+", " ", regex=True)
+print(df)</code>
       </div>
       <div class="block">
         <h3>Two numbers that sum to a target <span class="tag">plain-Python warm-up</span></h3>
@@ -453,7 +479,9 @@ df["name"] = df["name"].str.replace(r"\s+", " ", regex=True)</code>
         if complement in seen:
             return (seen[complement], i)
         seen[n] = i
-    return None</code>
+    return None
+
+print(two_sum([2, 7, 11, 15], 9))   # (0, 1)</code>
       </div>
       <div class="block">
         <h3>FizzBuzz <span class="tag">basic coding literacy check</span></h3>
