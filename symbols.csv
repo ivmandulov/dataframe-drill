@@ -1,0 +1,6 @@
+symbol,market,unit,active
+POWER-DE,EEX,MWh,true
+GAS-NL,TTF,MWh,true
+CARBON-EU,EEX,tonne,true
+POWER-FR,EEX,MWh,true
+GAS-UK,NBP,therm,false
