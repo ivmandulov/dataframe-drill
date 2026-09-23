@@ -125,6 +125,7 @@
     <a href="#datetime">Dates &amp; time series</a>
     <a href="#gotchas">Gotchas</a>
     <a href="#patterns">Patterns → Pandas</a>
+    <a href="#tasks">Common tasks</a>
   </nav>
 
   <section id="basics">
@@ -396,6 +397,70 @@ mismatches = merged[merged["value_a"] != merged["value_b"]]</code>
         <h3>Multi-Source Merge</h3>
         <code class="snip">order_value = prices.merge(quantities, on="product")
 order_value["total"] = order_value["price"] * order_value["qty"]</code>
+      </div>
+    </div>
+  </section>
+
+  <section id="tasks">
+    <h2>Common interview tasks <span class="tag">quick warm-ups, worth running through once before you start</span></h2>
+    <div class="section-note">Simple, frequently-asked shapes — smaller and more self-contained than the Pattern Stack above, closer to what a live warm-up question looks like.</div>
+    <div class="grid2">
+      <div class="block">
+        <h3>Remove duplicate rows</h3>
+        <code class="snip">df.drop_duplicates()
+df.drop_duplicates(subset=["order_id"], keep="first")</code>
+      </div>
+      <div class="block">
+        <h3>Top N per group (not just overall top N)</h3>
+        <code class="snip">df.sort_values("amount", ascending=False) \
+  .groupby("customer") \
+  .head(3)   # top 3 orders per customer</code>
+      </div>
+      <div class="block">
+        <h3>Reconciliation — rows that differ between two sources</h3>
+        <code class="snip">merged = a.merge(b, on="key", suffixes=("_a", "_b"), how="outer", indicator=True)
+diffs = merged[merged["_merge"] != "both"]           # missing on one side
+mismatches = merged[merged["value_a"] != merged["value_b"]]  # present both, differ</code>
+      </div>
+      <div class="block">
+        <h3>Find gaps in a time series <span class="tag">relevant here</span></h3>
+        <code class="snip">df = df.sort_values("time")
+expected = pd.date_range(df["time"].min(), df["time"].max(), freq="1min")
+missing = expected.difference(df["time"])</code>
+      </div>
+      <div class="block">
+        <h3>Forward-fill missing values over time</h3>
+        <code class="snip">df = df.set_index("time").asfreq("1min")
+df["price"] = df["price"].ffill()   # or .interpolate()</code>
+      </div>
+      <div class="block">
+        <h3>Long → wide reshape</h3>
+        <code class="snip"># one row per (date, metric) -> one row per date, one column per metric
+df.pivot(index="date", columns="metric", values="value")</code>
+      </div>
+      <div class="block">
+        <h3>Clean a messy text column</h3>
+        <code class="snip">df["name"] = df["name"].str.strip().str.lower()
+df["name"] = df["name"].str.replace(r"\s+", " ", regex=True)</code>
+      </div>
+      <div class="block">
+        <h3>Two numbers that sum to a target <span class="tag">plain-Python warm-up</span></h3>
+        <code class="snip">def two_sum(nums, target):
+    seen = {}
+    for i, n in enumerate(nums):
+        complement = target - n
+        if complement in seen:
+            return (seen[complement], i)
+        seen[n] = i
+    return None</code>
+      </div>
+      <div class="block">
+        <h3>FizzBuzz <span class="tag">basic coding literacy check</span></h3>
+        <code class="snip">for i in range(1, 101):
+    if i % 15 == 0: print("FizzBuzz")
+    elif i % 3 == 0: print("Fizz")
+    elif i % 5 == 0: print("Buzz")
+    else: print(i)</code>
       </div>
     </div>
   </section>
